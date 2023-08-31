@@ -1,4 +1,4 @@
-package ru.practicum.dto;
+package ru.practicum.stats.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.util.Constants.TIME_FORMAT;
+import static ru.practicum.stats.util.Constants.TIME_FORMAT;
 
 
 @Data
@@ -19,15 +19,12 @@ import static ru.practicum.util.Constants.TIME_FORMAT;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewStatDto {
-    @NotNull
     @NotBlank
     private String app;
 
-    @NotNull
     @NotBlank
     private String uri;
 
-    @NotNull
     @NotBlank
     @Pattern(regexp = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
     private String ip;

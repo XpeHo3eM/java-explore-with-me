@@ -7,16 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.NewStatDto;
 import ru.practicum.stats.client.StatsClient;
+import ru.practicum.stats.dto.NewStatDto;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.practicum.util.Constants.TIME_FORMAT;
+import static ru.practicum.stats.util.Constants.TIME_FORMAT;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,15 +24,15 @@ public class StatsClientController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createHit(@RequestBody @Valid NewStatDto hitDto) {
+    public ResponseEntity<Object> createHit(@RequestBody NewStatDto hitDto) {
         return client.createHit(hitDto);
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<Object> getStats(@RequestParam(name = "start") @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime start,
-                                           @RequestParam(name = "end") @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime end,
-                                           @RequestParam(name = "uris") Optional<List<String>> uris,
-                                           @RequestParam(name = "unique") boolean unique) {
-        return client.getStats(start, end, uris.orElse(Collections.emptyList()), unique);
+    public ResponseEntity<Object> getStats(@RequestParam @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime start,
+                                           @RequestParam @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime end,
+                                           @RequestParam Optional<List<String>> uris,
+                                           @RequestParam(defaultValue = "false") boolean unique) {
+        return client.getStats(start, end, uris.orElse(null), unique);
     }
 }

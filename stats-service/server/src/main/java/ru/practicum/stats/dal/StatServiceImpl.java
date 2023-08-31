@@ -1,13 +1,13 @@
-package ru.practicum.dal;
+package ru.practicum.stats.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.dao.StatRepository;
-import ru.practicum.dto.HitsStatDto;
-import ru.practicum.dto.NewStatDto;
-import ru.practicum.mapper.StatServiceMapper;
-import ru.practicum.model.StatItem;
+import ru.practicum.stats.dao.StatRepository;
+import ru.practicum.stats.dto.HitsStatDto;
+import ru.practicum.stats.dto.NewStatDto;
+import ru.practicum.stats.mapper.StatServiceMapper;
+import ru.practicum.stats.model.StatItem;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,9 +21,7 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public void addHit(NewStatDto newStatDto) {
-        StatItem hit = mapper.toStatItem(newStatDto);
-
-        repository.save(hit);
+        repository.save(mapper.toStatItem(newStatDto));
     }
 
     @Override

@@ -1,7 +1,7 @@
-package ru.practicum.dal;
+package ru.practicum.stats.dal;
 
-import ru.practicum.dto.HitsStatDto;
-import ru.practicum.dto.NewStatDto;
+import ru.practicum.stats.dto.HitsStatDto;
+import ru.practicum.stats.dto.NewStatDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,8 +1,8 @@
-package ru.practicum.mapper;
+package ru.practicum.stats.mapper;
 
 import org.mapstruct.Mapper;
-import ru.practicum.dto.NewStatDto;
-import ru.practicum.model.StatItem;
+import ru.practicum.stats.dto.NewStatDto;
+import ru.practicum.stats.model.StatItem;
 
 @Mapper(componentModel = "spring")
 public interface StatServiceMapper {
