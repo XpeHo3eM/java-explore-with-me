@@ -7,7 +7,6 @@ import ru.practicum.stats.dao.StatRepository;
 import ru.practicum.stats.dto.HitsStatDto;
 import ru.practicum.stats.dto.NewStatDto;
 import ru.practicum.stats.mapper.StatServiceMapper;
-import ru.practicum.stats.model.StatItem;
 
 import java.time.LocalDateTime;
 import java.util.List;
