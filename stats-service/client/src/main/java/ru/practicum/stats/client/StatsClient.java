@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static ru.practicum.stats.util.Constants.TIME_FORMATTER;
+import static ru.practicum.general.util.Constants.TIME_FORMATTER;
 
 
 @Service
