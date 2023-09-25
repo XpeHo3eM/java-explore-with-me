@@ -16,7 +16,6 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import static ru.practicum.general.util.Constants.*;
 
@@ -32,15 +31,13 @@ public class EventAdminController {
     public Collection<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
                                               @RequestParam(required = false) List<EventState> states,
                                               @RequestParam(required = false) List<Long> categories,
-                                              @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime start,
-                                              @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime end,
-                                              @RequestParam @PositiveOrZero Optional<Integer> from,
-                                              @RequestParam @Positive Optional<Integer> size) {
-        Integer pageFrom = from.orElse(PAGE_DEFAULT_FROM);
-        Integer pageSize = size.orElse(PAGE_DEFAULT_SIZE);
-        PageRequest page = PageRequest.of(pageFrom / pageSize, pageSize);
+                                              @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeStart,
+                                              @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeEnd,
+                                              @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                              @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size) {
+        PageRequest page = PageRequest.of(from / size, size);
 
-        return eventService.getAllByAdmin(users, states, categories, start, end, page);
+        return eventService.getAllByAdmin(users, states, categories, rangeStart, rangeEnd, page);
     }
 
     @PatchMapping("/{eventId}")

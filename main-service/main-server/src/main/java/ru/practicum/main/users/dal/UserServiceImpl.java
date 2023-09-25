@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.main.handler.ConflictException;
 import ru.practicum.main.handler.EntityNotFoundException;
 import ru.practicum.main.users.dao.UserRepository;
 import ru.practicum.main.users.dto.NewUserDto;
@@ -23,8 +24,10 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
 
     @Override
-    public UserDto create(NewUserDto userDto) {
-        return mapper.toDto(userRepository.save(mapper.toUser(userDto)));
+    public UserDto create(NewUserDto newUserDto) {
+        validateEmailExists(newUserDto.getEmail());
+
+        return mapper.toDto(userRepository.save(mapper.toUser(newUserDto)));
     }
 
     @Override
@@ -34,7 +37,8 @@ public class UserServiceImpl implements UserService {
                 ? userRepository.findAll(pageable)
                 : userRepository.findAllByIdIn(ids, pageable);
 
-        return users.stream()
+        return users
+                .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -46,5 +50,11 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.deleteById(userId);
+    }
+
+    private void validateEmailExists(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new ConflictException(String.format("Пользователь с email = %s уже зарегистрирован", email));
+        }
     }
 }

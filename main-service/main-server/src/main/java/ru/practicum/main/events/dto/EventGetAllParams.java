@@ -2,6 +2,7 @@ package ru.practicum.main.events.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import ru.practicum.main.events.enums.EventSort;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Data
 @Builder
+@ToString
 public class EventGetAllParams {
     private String text;
     private List<Long> categories;

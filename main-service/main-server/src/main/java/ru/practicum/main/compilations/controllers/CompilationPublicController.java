@@ -10,7 +10,6 @@ import ru.practicum.main.compilations.dto.CompilationDto;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
-import java.util.Optional;
 
 import static ru.practicum.general.util.Constants.PAGE_DEFAULT_FROM;
 import static ru.practicum.general.util.Constants.PAGE_DEFAULT_SIZE;
@@ -29,14 +28,11 @@ public class CompilationPublicController {
     }
 
     @GetMapping
-    public Collection<CompilationDto> get(@RequestParam Optional<Boolean> pinned,
-                                          @RequestParam @PositiveOrZero Optional<Integer> from,
-                                          @RequestParam @Positive Optional<Integer> size) {
-        Integer pageFrom = from.orElse(PAGE_DEFAULT_FROM);
-        Integer pageSize = size.orElse(PAGE_DEFAULT_SIZE);
-        PageRequest page = PageRequest.of(pageFrom / pageSize, pageSize);
+    public Collection<CompilationDto> get(@RequestParam(required = false, defaultValue = "false") Boolean pinned,
+                                          @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                          @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size) {
+        PageRequest page = PageRequest.of(from / size, size);
 
-        return serviceCompilation.getAll(pinned.orElse(false), page);
+        return serviceCompilation.getAll(pinned, page);
     }
-
 }

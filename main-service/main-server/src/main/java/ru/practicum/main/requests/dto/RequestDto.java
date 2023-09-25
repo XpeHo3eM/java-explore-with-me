@@ -16,7 +16,7 @@ import static ru.practicum.general.util.Constants.TIME_FORMAT;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParticipationRequestDto {
+public class RequestDto {
     private Long id;
     private Long requester;
     private Long event;

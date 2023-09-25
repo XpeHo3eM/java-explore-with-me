@@ -1,10 +1,8 @@
 package ru.practicum.main.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import ru.practicum.main.events.enums.EventState;
 import ru.practicum.main.events.model.Location;
 
 import javax.validation.constraints.*;
@@ -16,12 +14,13 @@ import static ru.practicum.general.util.Constants.TIME_FORMAT;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class NewEventDto {
-    @NotEmpty
+    @NotBlank
     @Size(min = 3, max = 120)
     private String title;
 
-    @NotEmpty
+    @NotBlank
     @Size(min = 20, max = 2000)
     private String annotation;
 
@@ -29,7 +28,7 @@ public class NewEventDto {
     @Positive
     private Long category;
 
-    @NotEmpty
+    @NotBlank
     @Size(min = 20, max = 7000)
     private String description;
 
@@ -38,15 +37,11 @@ public class NewEventDto {
     @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime eventDate;
 
+    @NotNull
     private Location location;
 
-    @NotNull
-    private Boolean paid;
-
-    @NotNull
-    @PositiveOrZero
-    private Integer participantLimit;
-
-    @NotNull
-    private Boolean requestModeration;
+    private Boolean paid = false;
+    private Integer participantLimit = 0;
+    private Boolean requestModeration = true;
+    private EventState state = EventState.PENDING;
 }

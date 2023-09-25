@@ -1,15 +1,13 @@
 package ru.practicum.main.requests.dal;
 
-import ru.practicum.main.events.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.main.events.dto.EventRequestStatusUpdateResult;
-import ru.practicum.main.requests.dto.ParticipationRequestDto;
+import ru.practicum.main.requests.dto.RequestDto;
 
 import java.util.List;
 
 public interface RequestService {
-    ParticipationRequestDto createParticipationRequest(Long userId, Long eventId);
+    RequestDto create(Long eventId, Long userId);
 
-    List<ParticipationRequestDto> getParticipationRequestByUserId(Long userId);
+    List<RequestDto> getAll(Long userId);
 
-    ParticipationRequestDto updateStatusParticipationRequest(Long userId, Long requestId);
+    RequestDto cancel(Long requestId, Long userId);
 }

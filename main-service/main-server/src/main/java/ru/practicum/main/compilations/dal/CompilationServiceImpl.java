@@ -1,17 +1,21 @@
 package ru.practicum.main.compilations.dal;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.compilations.dao.CompilationRepository;
 import ru.practicum.main.compilations.dto.CompilationDto;
 import ru.practicum.main.compilations.dto.NewCompilationDto;
+import ru.practicum.main.compilations.dto.UpdateCompilationDto;
 import ru.practicum.main.compilations.mapper.CompilationMapper;
 import ru.practicum.main.compilations.model.Compilation;
 import ru.practicum.main.events.dao.EventRepository;
+import ru.practicum.main.events.model.Event;
 import ru.practicum.main.handler.EntityNotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,25 +27,33 @@ import java.util.stream.Collectors;
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
-    private final CompilationMapper mapper;
+    private final CompilationMapper compilationMapper;
 
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
-        Compilation compilation = mapper.toCompilation(newCompilationDto);
+        Compilation compilation = compilationMapper.toCompilation(newCompilationDto);
 
+        List<Event> events;
         if (newCompilationDto.getEvents() != null) {
-            compilation.setEvents(eventRepository.findAllByIdIn(newCompilationDto.getEvents()));
+            events = newCompilationDto.getEvents()
+                    .stream()
+                    .map(this::getEventOrThrowException)
+                    .collect(Collectors.toList());
+        } else {
+            events = Collections.emptyList();
         }
 
-        return mapper.toDto(compilation);
+        compilation.setEvents(events);
+
+        return compilationMapper.toDto(compilationRepository.save(compilation));
     }
 
     @Override
-    public CompilationDto update(Long compId, NewCompilationDto newCompilationDto) {
+    public CompilationDto update(Long compId, UpdateCompilationDto updateCompilationDto) {
         Compilation compilationInRepository = getCompilationOrThrowException(compId);
-        Set<Long> updatedEvents = newCompilationDto.getEvents();
-        Boolean updatedPinned = newCompilationDto.getPinned();
-        String updatedTitle = newCompilationDto.getTitle();
+        Set<Long> updatedEvents = updateCompilationDto.getEvents();
+        Boolean updatedPinned = updateCompilationDto.getPinned();
+        String updatedTitle = updateCompilationDto.getTitle();
 
         if (updatedEvents != null) {
             compilationInRepository.setEvents(eventRepository.findAllById(updatedEvents));
@@ -53,12 +65,12 @@ public class CompilationServiceImpl implements CompilationService {
             compilationInRepository.setTitle(updatedTitle);
         }
 
-        return mapper.toDto(compilationInRepository);
+        return compilationMapper.toDto(compilationInRepository);
     }
 
     @Override
     public void delete(Long compId) {
-        isCompilationExists(compId);
+        validateCompilationExists(compId);
 
         compilationRepository.deleteById(compId);
     }
@@ -66,28 +78,39 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional(readOnly = true)
     public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
-        return (pinned == null
-                ? compilationRepository.findAll(pageable)
-                : compilationRepository.findAllByPinned(pinned, pageable))
+        Page<Compilation> compilations;
+
+        if (pinned) {
+            compilations = compilationRepository.findAllByPinned(pinned, pageable);
+        } else {
+            compilations = compilationRepository.findAll(pageable);
+        }
+
+        return compilations
                 .stream()
-                .map(mapper::toDto)
+                .map(compilationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public CompilationDto getById(Long id) {
-        return mapper.toDto(getCompilationOrThrowException(id));
+        return compilationMapper.toDto(getCompilationOrThrowException(id));
     }
 
     private Compilation getCompilationOrThrowException(Long id) {
         return compilationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Событие с id = %d не найдено", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Подборка событий с id = %d не найдена", id)));
     }
 
-    private void isCompilationExists(Long id) {
+    private void validateCompilationExists(long id) {
         if (!compilationRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format("Событие с id = %d не найдено", id));
+            throw new EntityNotFoundException(String.format("Подборка событий с id = %d не найдена", id));
         }
+    }
+
+    private Event getEventOrThrowException(long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Событие с id = %d не найдено", id)));
     }
 }

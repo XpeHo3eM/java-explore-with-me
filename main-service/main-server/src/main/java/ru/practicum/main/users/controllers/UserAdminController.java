@@ -34,11 +34,9 @@ public class UserAdminController {
 
     @GetMapping()
     public List<UserDto> get(@RequestParam Optional<List<Long>> ids,
-                             @RequestParam @PositiveOrZero Optional<Integer> from,
-                             @RequestParam @Positive Optional<Integer> size) {
-        Integer pageFrom = from.orElse(PAGE_DEFAULT_FROM);
-        Integer pageSize = size.orElse(PAGE_DEFAULT_SIZE);
-        PageRequest page = PageRequest.of(pageFrom / pageSize, pageSize);
+                             @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                             @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size) {
+        PageRequest page = PageRequest.of(from / size, size);
 
         return userService.getAll(ids.orElse(Collections.emptyList()), page);
     }

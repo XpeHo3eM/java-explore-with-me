@@ -17,16 +17,16 @@ import static ru.practicum.general.util.Constants.TIME_FORMAT;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventShortDto {
+    private Long id;
     private String title;
     private String annotation;
     private CategoryDto category;
-    private Integer confirmedRequests;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TIME_FORMAT)
+    @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime eventDate;
 
-    private Long id;
-    private UserShortDto initiator;
     private Boolean paid;
+    private Integer confirmedRequests;
     private Long views;
+    private UserShortDto initiator;
 }

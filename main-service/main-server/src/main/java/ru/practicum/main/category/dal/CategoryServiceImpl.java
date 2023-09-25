@@ -27,6 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
+        validateCategoryExists(newCategoryDto.getName());
+
         return mapper.toDto(categoryRepository.save(mapper.toCategory(newCategoryDto)));
     }
 
@@ -39,10 +41,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto update(Long id, CategoryDto categoryDto) {
+    public CategoryDto update(Long id, NewCategoryDto newCategoryDto) {
         Category category = getCategoryOrThrowException(id);
 
-        category.setName(categoryDto.getName());
+        if (!newCategoryDto.getName().equals(category.getName())) {
+            validateCategoryExists(newCategoryDto.getName());
+
+            category.setName(newCategoryDto.getName());
+        }
 
         return mapper.toDto(category);
     }
@@ -57,11 +63,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format("Категория с id = %d не найдена", id));
-        }
+        Category category = getCategoryOrThrowException(id);
 
-        if (eventRepository.existsByCategoryId(id)) {
+        if (eventRepository.existsByCategory(category)) {
             throw new ConflictException(String.format("Категория с id = %d имеет связанные события", id));
         }
 
@@ -71,5 +75,11 @@ public class CategoryServiceImpl implements CategoryService {
     private Category getCategoryOrThrowException(long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Категория с id = %d не найдена", id)));
+    }
+
+    private void validateCategoryExists(String name) {
+        if (categoryRepository.existsByName(name)) {
+            throw new ConflictException(String.format("Категория с названием = %s уже создана", name));
+        }
     }
 }

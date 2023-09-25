@@ -1,7 +1,6 @@
 package ru.practicum.main.events.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import static ru.practicum.general.util.Constants.*;
 
@@ -38,23 +36,23 @@ public class EventPublicController {
     public Collection<EventShortDto> getEventsPublic(@RequestParam(required = false) String text,
                                                      @RequestParam(required = false) List<Long> categories,
                                                      @RequestParam(required = false) Boolean paid,
-                                                     @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime start,
-                                                     @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime end,
-                                                     @RequestParam(defaultValue = "false") Boolean available,
+                                                     @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeStart,
+                                                     @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeEnd,
+                                                     @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                      @RequestParam(defaultValue = "EVENT_DATE") EventSort sort,
-                                                     @RequestParam @PositiveOrZero Optional<Integer> from,
-                                                     @RequestParam @Positive Optional<Integer> size,
+                                                     @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                                     @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size,
                                                      HttpServletRequest request) {
         return eventService.getAllPublic(EventGetAllParams.builder()
                 .text(text)
                 .categories(categories)
                 .paid(paid)
-                .start(start)
-                .end(end)
-                .available(available)
+                .start(rangeStart)
+                .end(rangeEnd)
+                .available(onlyAvailable)
                 .sort(sort)
-                .from(from.orElse(PAGE_DEFAULT_FROM))
-                .size(size.orElse(PAGE_DEFAULT_SIZE))
+                .from(from)
+                .size(size)
                 .httpServletRequest(request)
                 .build());
     }

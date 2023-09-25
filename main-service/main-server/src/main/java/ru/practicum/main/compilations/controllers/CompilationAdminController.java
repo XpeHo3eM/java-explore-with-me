@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.compilations.dal.CompilationService;
 import ru.practicum.main.compilations.dto.CompilationDto;
 import ru.practicum.main.compilations.dto.NewCompilationDto;
+import ru.practicum.main.compilations.dto.UpdateCompilationDto;
 
 import javax.validation.Valid;
 
@@ -23,8 +24,8 @@ public class CompilationAdminController {
 
     @PatchMapping("/{compId}")
     public CompilationDto updateById(@PathVariable(value = "compId") Long compId,
-                                     @RequestBody @Valid NewCompilationDto newCompilationDto) {
-        return compilationService.update(compId, newCompilationDto);
+                                     @RequestBody @Valid UpdateCompilationDto updateCompilationDto) {
+        return compilationService.update(compId, updateCompilationDto);
     }
 
     @DeleteMapping("/{compId}")

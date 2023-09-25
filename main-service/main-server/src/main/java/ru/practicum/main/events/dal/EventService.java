@@ -3,7 +3,7 @@ package ru.practicum.main.events.dal;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.main.events.dto.*;
 import ru.practicum.main.events.enums.EventState;
-import ru.practicum.main.requests.dto.ParticipationRequestDto;
+import ru.practicum.main.requests.dto.RequestDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -28,8 +28,8 @@ public interface EventService {
 
     EventFullDto getByIdPublic(Long id, HttpServletRequest request);
 
-    List<ParticipationRequestDto> getParticipationRequestPrivate(Long userId, Long eventId);
+    List<RequestDto> getRequestsPrivate(Long userId, Long eventId);
 
-    EventRequestStatusUpdateResult updateEventRequestStatusPrivate(Long userId, Long eventId,
-                                                                   EventRequestStatusUpdateRequest dtoRequest);
+    RequestStatusUpdateResult updateEventRequestStatusPrivate(Long userId, Long eventId,
+                                                              RequestStatusUpdateRequest updateRequest);
 }

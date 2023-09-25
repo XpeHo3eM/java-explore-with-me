@@ -28,7 +28,7 @@ public class EventUpdatedDto {
 
     private Long category;
 
-    @Size(max = 7000, min = 20)
+    @Size(min = 20, max = 7000)
     private String description;
 
     @Future

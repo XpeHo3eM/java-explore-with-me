@@ -22,25 +22,26 @@ import static ru.practicum.general.util.Constants.TIME_FORMAT;
 public class EventFullDto {
     private Long id;
     private String title;
-    private String description;
     private String annotation;
     private CategoryDto category;
+    private String description;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TIME_FORMAT)
+    @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime eventDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TIME_FORMAT)
-    private LocalDateTime publishedOn;
+    private Location location;
+    private Boolean paid;
+    private Integer participantLimit;
+    private Boolean requestModeration;
+    private UserShortDto initiator;
+    private EventState state;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TIME_FORMAT)
+    @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime createdOn;
 
-    private Location location;
-    private boolean paid;
-    private int participantLimit;
-    private int confirmedRequests;
+    @JsonFormat(pattern = TIME_FORMAT)
+    private LocalDateTime publishedOn;
+
+    private Integer confirmedRequests;
     private long views;
-    private EventState state;
-    private boolean requestModeration;
-    private UserShortDto initiator;
 }
