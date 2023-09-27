@@ -31,13 +31,14 @@ public class EventAdminController {
     public Collection<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
                                               @RequestParam(required = false) List<EventState> states,
                                               @RequestParam(required = false) List<Long> categories,
+                                              @RequestParam(required = false) Boolean onlyPending,
                                               @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeStart,
                                               @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeEnd,
                                               @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
                                               @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size) {
         PageRequest page = PageRequest.of(from / size, size);
 
-        return eventService.getAllByAdmin(users, states, categories, rangeStart, rangeEnd, page);
+        return eventService.getAllByAdmin(users, states, categories, rangeStart, rangeEnd, page, onlyPending);
     }
 
     @PatchMapping("/{eventId}")

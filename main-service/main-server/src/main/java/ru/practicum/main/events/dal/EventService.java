@@ -12,7 +12,8 @@ import java.util.List;
 public interface EventService {
 
     List<EventFullDto> getAllByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
-                                     LocalDateTime start, LocalDateTime end, Pageable pageable);
+                                     LocalDateTime start, LocalDateTime end, Pageable pageable,
+                                     Boolean onlyPending);
 
     EventFullDto updateByAdmin(Long eventId, EventUpdatedDto eventUpdateDto);
 
@@ -22,7 +23,7 @@ public interface EventService {
 
     EventFullDto getByIdPrivate(Long userId, Long eventId);
 
-    EventFullDto updateByUser(Long userId, Long eventId, EventUpdatedDto eventDto);
+    EventFullDto updateByUser(Long userId, Long eventId, EventUpdatedDto eventUpdatedDto);
 
     List<EventShortDto> getAllPublic(EventGetAllParams eventGetAllParams);
 

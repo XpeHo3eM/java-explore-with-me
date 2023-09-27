@@ -94,7 +94,8 @@ public class EventServiceImpl implements EventService {
                                             List<Long> categories,
                                             LocalDateTime start,
                                             LocalDateTime end,
-                                            Pageable pageable) {
+                                            Pageable pageable,
+                                            Boolean onlyPending) {
         validateTimeRange(start, end);
 
         Page<Event> events = eventRepository.findAllForAdmin(users, states, categories, getRangeStart(start), pageable);
@@ -373,6 +374,7 @@ public class EventServiceImpl implements EventService {
                 break;
             case SEND_TO_REVIEW:
                 event.setState(PENDING);
+                event.setModerationComment(eventUpdatedDto.getModerationComment());
                 break;
         }
 
@@ -388,10 +390,12 @@ public class EventServiceImpl implements EventService {
             switch (eventUpdatedDto.getStateAction()) {
                 case REJECT_EVENT:
                     event.setState(CANCELED);
+                    event.setModerationComment(eventUpdatedDto.getModerationComment());
                     break;
                 case PUBLISH_EVENT:
                     event.setState(PUBLISHED);
                     event.setPublishedOn(LocalDateTime.now());
+                    event.setModerationComment(null);
                     break;
             }
         }

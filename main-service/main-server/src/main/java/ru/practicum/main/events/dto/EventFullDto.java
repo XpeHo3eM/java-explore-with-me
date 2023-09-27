@@ -38,4 +38,5 @@ public class EventFullDto {
 
     private Integer confirmedRequests;
     private long views;
+    private String moderationComment;
 }

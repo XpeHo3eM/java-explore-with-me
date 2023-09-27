@@ -21,5 +21,6 @@ public class EventGetAllParams {
     EventSort sort;
     int from;
     int size;
+    Boolean onlyPending;
     HttpServletRequest httpServletRequest;
 }
