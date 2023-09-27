@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.practicum.stats.util.Constants.TIME_FORMAT;
+import static ru.practicum.general.util.Constants.TIME_FORMAT;
 
 @RestController
 @RequiredArgsConstructor

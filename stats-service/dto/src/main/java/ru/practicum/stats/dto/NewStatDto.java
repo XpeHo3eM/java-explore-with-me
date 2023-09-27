@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.stats.util.Constants.TIME_FORMAT;
+import static ru.practicum.general.util.Constants.TIME_FORMAT;
 
 
 @Data
