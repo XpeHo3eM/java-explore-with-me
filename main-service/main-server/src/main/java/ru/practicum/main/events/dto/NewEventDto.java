@@ -1,7 +1,7 @@
 package ru.practicum.main.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Data;
 import ru.practicum.main.events.enums.EventState;
 import ru.practicum.main.events.model.Location;
 
@@ -11,10 +11,6 @@ import java.time.LocalDateTime;
 import static ru.practicum.general.util.Constants.TIME_FORMAT;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class NewEventDto {
     @NotBlank
     @Size(min = 3, max = 120)

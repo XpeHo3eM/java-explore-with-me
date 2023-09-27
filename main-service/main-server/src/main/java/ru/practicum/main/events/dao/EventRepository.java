@@ -19,22 +19,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Page<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
-    @Query(value = "SELECT e" +
+    @Query("SELECT e" +
             " FROM Event AS e" +
             " WHERE e.eventDate > :start" +
             "     AND (e.category.id IN :categories OR :categories IS NULL)" +
             "     AND (e.initiator.id IN :users OR :users IS NULL)" +
-            "     AND (e.state IN :states OR :states IS NULL)",
-            countQuery = "SELECT COUNT(*)" +
-                    " FROM Event AS e" +
-                    " WHERE e.eventDate > :start" +
-                    "     AND (e.category.id IN :categories OR :categories IS NULL)" +
-                    "     AND (e.initiator.id IN :users OR :users IS NULL)" +
-                    "     AND (e.state IN :states OR :states IS NULL)")
+            "     AND (e.state IN :states OR :states IS NULL)")
     Page<Event> findAllForAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                 LocalDateTime start, Pageable pageable);
 
-    @Query(value = "SELECT e" +
+    @Query("SELECT e" +
             " FROM Event e" +
             " WHERE e.state = :state" +
             "     AND (e.participantLimit = 0 OR e.participantLimit > e.confirmedRequests) " +
@@ -44,22 +38,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "     AND (:text IS NULL" +
             "         OR (UPPER(e.annotation) LIKE UPPER(CONCAT('%', :text, '%')))" +
             "         OR (UPPER(e.description) LIKE UPPER(CONCAT('%', :text, '%')))" +
-            "         OR (UPPER(e.title) LIKE UPPER(CONCAT('%', :text, '%'))))",
-            countQuery = "SELECT COUNT(*)" +
-                    " FROM Event e" +
-                    " WHERE e.state = :state" +
-                    "     AND (e.participantLimit = 0 OR e.participantLimit > e.confirmedRequests) " +
-                    "     AND (e.category.id IN :categories OR :categories IS NULL)" +
-                    "     AND (e.eventDate > :start)" +
-                    "     AND (:paid IS NULL OR e.paid = :paid)" +
-                    "     AND (:text IS NULL" +
-                    "         OR (UPPER(e.annotation) LIKE UPPER(CONCAT('%', :text, '%')))" +
-                    "         OR (UPPER(e.description) LIKE UPPER(CONCAT('%', :text, '%')))" +
-                    "         OR (UPPER(e.title) LIKE UPPER(CONCAT('%', :text, '%'))))")
+            "         OR (UPPER(e.title) LIKE UPPER(CONCAT('%', :text, '%'))))")
     Page<Event> findAllPublishStateAvailable(EventState state, LocalDateTime start, List<Long> categories,
                                              Boolean paid, String text, Pageable pageable);
 
-    @Query(value = "SELECT e" +
+    @Query("SELECT e" +
             " FROM Event AS e" +
             " WHERE e.state = :state" +
             "     AND (e.participantLimit = 0 OR e.participantLimit > e.confirmedRequests) " +
@@ -68,17 +51,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "     AND (:paid IS NULL OR e.paid = :paid)" +
             "     AND (:text IS NULL" +
             "          OR (UPPER(e.annotation) LIKE UPPER(:text))" +
-            "          OR (UPPER(e.description) LIKE UPPER(:text)))",
-            countQuery = "SELECT COUNT(*)" +
-                    " FROM Event AS e" +
-                    " WHERE e.state = :state" +
-                    "     AND (e.participantLimit = 0 OR e.participantLimit > e.confirmedRequests) " +
-                    "     AND (e.category.id IN :categories OR :categories IS NULL)" +
-                    "     AND (e.eventDate > :start)" +
-                    "     AND (:paid IS NULL OR e.paid = :paid)" +
-                    "     AND (:text IS NULL " +
-                    "          OR (UPPER(e.annotation) LIKE UPPER(:text))" +
-                    "          OR (UPPER(e.description) LIKE UPPER(:text)))")
+            "          OR (UPPER(e.description) LIKE UPPER(:text)))")
     Page<Event> findAllPublishStateNotAvailable(EventState state, LocalDateTime start, List<Long> categories,
                                                 Boolean paid, String text, Pageable pageable);
 }

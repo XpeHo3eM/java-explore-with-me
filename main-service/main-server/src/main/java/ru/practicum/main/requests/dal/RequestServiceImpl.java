@@ -1,6 +1,7 @@
 package ru.practicum.main.requests.dal;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.events.dao.EventRepository;
@@ -14,6 +15,7 @@ import ru.practicum.main.requests.model.Request;
 import ru.practicum.main.users.dao.UserRepository;
 import ru.practicum.main.users.model.User;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,10 +33,24 @@ public class RequestServiceImpl implements RequestService {
     private final UserRepository userRepository;
     private final RequestMapper mapper;
 
+    private static <T> T getEntityOrThrowException(@NotNull JpaRepository<T, Long> storage, Long id) throws EntityNotFoundException {
+        String message;
+        if (storage instanceof EventRepository) {
+            message = String.format("Событие с id = %d не найдено", id);
+        } else if (storage instanceof UserRepository) {
+            message = String.format("Пользователь с id = %d не найден", id);
+        } else {
+            message = "";
+        }
+
+        return storage.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(message));
+    }
+
     @Override
     public RequestDto create(Long eventId, Long userId) {
-        User user = getUserOrThrowException(userId);
-        Event event = getEventOrThrowException(eventId);
+        User user = getEntityOrThrowException(userRepository, userId);
+        Event event = getEntityOrThrowException(eventRepository, eventId);
 
         validateParticipantLimit(event);
 
@@ -72,16 +88,6 @@ public class RequestServiceImpl implements RequestService {
         return mapper.toDto(request);
     }
 
-    private User getUserOrThrowException(long id) {
-        return userRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException(String.format("Пользователь с id = %d не найден", id)));
-    }
-
-    private Event getEventOrThrowException(long id) {
-        return eventRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException(String.format("Событие с id = %d не найдено", id)));
-    }
-
     private Request getRequestOrThrowException(long requestId, long userId) {
         validateUserExists(userId);
 
@@ -103,12 +109,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private Request createRequest(Event event, User user) {
-        Request request = Request.builder()
-                .requester(user)
-                .created(LocalDateTime.now())
-                .event(event)
-                .status(PENDING)
-                .build();
+        Request request = mapper.toRequest(event, user, PENDING, LocalDateTime.now());
 
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             request.setStatus(CONFIRMED);

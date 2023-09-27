@@ -12,9 +12,7 @@ import ru.practicum.main.users.dto.UserDto;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static ru.practicum.general.util.Constants.PAGE_DEFAULT_FROM;
 import static ru.practicum.general.util.Constants.PAGE_DEFAULT_SIZE;
@@ -33,12 +31,12 @@ public class UserAdminController {
     }
 
     @GetMapping()
-    public List<UserDto> get(@RequestParam Optional<List<Long>> ids,
+    public List<UserDto> get(@RequestParam(required = false) List<Long> ids,
                              @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
                              @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size) {
         PageRequest page = PageRequest.of(from / size, size);
 
-        return userService.getAll(ids.orElse(Collections.emptyList()), page);
+        return userService.getAll(ids, page);
     }
 
     @DeleteMapping("/{userId}")

@@ -1,10 +1,7 @@
 package ru.practicum.main.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.practicum.main.category.dto.CategoryDto;
 import ru.practicum.main.events.enums.EventState;
 import ru.practicum.main.events.model.Location;
@@ -16,9 +13,6 @@ import static ru.practicum.general.util.Constants.TIME_FORMAT;
 
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class EventFullDto {
     private Long id;
     private String title;

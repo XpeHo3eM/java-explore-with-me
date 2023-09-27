@@ -1,6 +1,8 @@
 package ru.practicum.main.category.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -8,9 +10,6 @@ import javax.persistence.*;
 @Table(name = "categories")
 @Getter
 @Setter
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class Category {
     @Id

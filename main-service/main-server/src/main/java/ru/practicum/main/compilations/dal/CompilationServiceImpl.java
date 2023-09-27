@@ -1,8 +1,8 @@
 package ru.practicum.main.compilations.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.compilations.dao.CompilationRepository;
@@ -15,6 +15,7 @@ import ru.practicum.main.events.dao.EventRepository;
 import ru.practicum.main.events.model.Event;
 import ru.practicum.main.handler.EntityNotFoundException;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,20 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventRepository eventRepository;
     private final CompilationMapper compilationMapper;
 
+    private static <T> T getEntityOrThrowException(@NotNull JpaRepository<T, Long> storage, Long id) throws EntityNotFoundException {
+        String message;
+        if (storage instanceof CompilationRepository) {
+            message = String.format("Подборка событий с id = %d не найдена", id);
+        } else if (storage instanceof EventRepository) {
+            message = String.format("Событие с id = %d не найдено", id);
+        } else {
+            message = "";
+        }
+
+        return storage.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(message));
+    }
+
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
         Compilation compilation = compilationMapper.toCompilation(newCompilationDto);
@@ -37,7 +52,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (newCompilationDto.getEvents() != null) {
             events = newCompilationDto.getEvents()
                     .stream()
-                    .map(this::getEventOrThrowException)
+                    .map(eventId -> getEntityOrThrowException(eventRepository, eventId))
                     .collect(Collectors.toList());
         } else {
             events = Collections.emptyList();
@@ -50,7 +65,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto update(Long compId, UpdateCompilationDto updateCompilationDto) {
-        Compilation compilationInRepository = getCompilationOrThrowException(compId);
+        Compilation compilationInRepository = getEntityOrThrowException(compilationRepository, compId);
         Set<Long> updatedEvents = updateCompilationDto.getEvents();
         Boolean updatedPinned = updateCompilationDto.getPinned();
         String updatedTitle = updateCompilationDto.getTitle();
@@ -78,15 +93,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional(readOnly = true)
     public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
-        Page<Compilation> compilations;
-
-        if (pinned) {
-            compilations = compilationRepository.findAllByPinned(pinned, pageable);
-        } else {
-            compilations = compilationRepository.findAll(pageable);
-        }
-
-        return compilations
+        return compilationRepository.findAllByPinned(pinned, pageable)
                 .stream()
                 .map(compilationMapper::toDto)
                 .collect(Collectors.toList());
@@ -95,22 +102,12 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional(readOnly = true)
     public CompilationDto getById(Long id) {
-        return compilationMapper.toDto(getCompilationOrThrowException(id));
-    }
-
-    private Compilation getCompilationOrThrowException(Long id) {
-        return compilationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Подборка событий с id = %d не найдена", id)));
+        return compilationMapper.toDto(getEntityOrThrowException(compilationRepository, id));
     }
 
     private void validateCompilationExists(long id) {
         if (!compilationRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("Подборка событий с id = %d не найдена", id));
         }
-    }
-
-    private Event getEventOrThrowException(long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Событие с id = %d не найдено", id)));
     }
 }

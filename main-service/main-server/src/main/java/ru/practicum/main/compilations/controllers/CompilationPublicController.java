@@ -28,7 +28,7 @@ public class CompilationPublicController {
     }
 
     @GetMapping
-    public Collection<CompilationDto> get(@RequestParam(required = false, defaultValue = "false") Boolean pinned,
+    public Collection<CompilationDto> get(@RequestParam(required = false) Boolean pinned,
                                           @RequestParam(defaultValue = PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
                                           @RequestParam(defaultValue = PAGE_DEFAULT_SIZE) @Positive Integer size) {
         PageRequest page = PageRequest.of(from / size, size);

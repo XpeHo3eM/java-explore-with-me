@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.category.dao.CategoryRepository;
@@ -30,6 +31,7 @@ import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.HitsStatDto;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,6 +56,37 @@ public class EventServiceImpl implements EventService {
     @Value("${application.name}")
     private String app;
 
+    private static <T> T getEntityOrThrowException(@NotNull JpaRepository<T, Long> storage, Long id) throws EntityNotFoundException {
+        String message;
+        if (storage instanceof CategoryRepository) {
+            message = String.format("Категория с id = %d не найдена", id);
+        } else if (storage instanceof EventRepository) {
+            message = String.format("Событие с id = %d не найдено", id);
+        } else if (storage instanceof UserRepository) {
+            message = String.format("Пользователь с id = %d не найден", id);
+        } else {
+            message = "";
+        }
+
+        return storage.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(message));
+    }
+
+    private static <T> void validateEntityExists(@NotNull JpaRepository<T, Long> storage, Long id) throws EntityNotFoundException {
+        String message;
+        if (storage instanceof EventRepository) {
+            message = String.format("Событие с id = %d не найдено", id);
+        } else if (storage instanceof UserRepository) {
+            message = String.format("Пользователь с id = %d не найден", id);
+        } else {
+            message = "";
+        }
+
+        if (!storage.existsById(id)) {
+            throw new EntityNotFoundException(message);
+        }
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<EventFullDto> getAllByAdmin(List<Long> users,
@@ -72,10 +105,9 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public EventFullDto updateByAdmin(Long eventId, EventUpdatedDto eventUpdatedDto) {
-        Event event = getEventOrThrowException(eventId);
+        Event event = getEntityOrThrowException(eventRepository, eventId);
 
         updateEventByAdmin(event, eventUpdatedDto);
 
@@ -86,8 +118,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
         validateEventDate(newEventDto.getEventDate());
 
-        User user = getUserOrThrowException(userId);
-        Category category = getCategoryOrThrowException(newEventDto.getCategory());
+        User user = getEntityOrThrowException(userRepository, userId);
+        Category category = getEntityOrThrowException(categoryRepository, newEventDto.getCategory());
 
         Event event = eventMapper.toEvent(newEventDto, user, category);
         event.setCreatedOn(LocalDateTime.now());
@@ -179,7 +211,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getByIdPublic(Long id, HttpServletRequest httpServletRequest) {
-        Event event = getEventOrThrowException(id);
+        Event event = getEntityOrThrowException(eventRepository, id);
 
         if (!event.getState().equals(PUBLISHED)) {
             throw new EntityNotFoundException(String.format("Событие с id = %d уже опубликовано", id));
@@ -200,8 +232,8 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestDto> getRequestsPrivate(Long userId, Long eventId) {
-        validateUserExists(userId);
-        validateEventExists(eventId);
+        validateEntityExists(userRepository, userId);
+        validateEntityExists(eventRepository, eventId);
 
         if (eventRepository.findByIdAndInitiatorId(eventId, userId).isEmpty()) {
             return Collections.emptyList();
@@ -383,7 +415,7 @@ public class EventServiceImpl implements EventService {
             event.setDescription(eventDto.getDescription());
         }
         if (eventDto.getCategory() != null) {
-            Category category = getCategoryOrThrowException(eventDto.getCategory());
+            Category category = getEntityOrThrowException(categoryRepository, eventDto.getCategory());
             event.setCategory(category);
         }
         if (eventDto.getPaid() != null) {
@@ -432,38 +464,11 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private Category getCategoryOrThrowException(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Категория с id = %d не найдена", id)));
-    }
-
-    private Event getEventOrThrowException(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Событие с id = %d не найдено", id)));
-    }
-
     private Event getEventOrThrowException(Long eventId, Long userId) {
-        validateUserExists(userId);
+        validateEntityExists(userRepository, userId);
 
         return eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Событие с id = %d для пользователя " +
                         "с id = %d не найдено", eventId, userId)));
-    }
-
-    private void validateEventExists(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format("Событие с id = %d не найдено", id));
-        }
-    }
-
-    private User getUserOrThrowException(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Пользователь с id = %d не найден", id)));
-    }
-
-    private void validateUserExists(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
     }
 }

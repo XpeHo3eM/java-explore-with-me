@@ -1,12 +1,12 @@
 package ru.practicum.main.events.model;
 
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class Location {
     private Double lat;

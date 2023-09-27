@@ -1,6 +1,8 @@
 package ru.practicum.main.events.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.main.category.model.Category;
 import ru.practicum.main.events.enums.EventState;
 import ru.practicum.main.users.model.User;
@@ -14,9 +16,6 @@ import static ru.practicum.main.events.enums.EventState.PENDING;
 @Table(name = "events")
 @Getter
 @Setter
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class Event {
     @Id
