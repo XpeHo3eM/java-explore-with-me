@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS events (
     request_moderation BOOLEAN   NOT NULL,
     initiator_id       BIGINT    NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     state              VARCHAR   NOT NULL,
+    moderation_comment VARCHAR,
     created_on         TIMESTAMP NOT NULL,
     published_on       TIMESTAMP
 );

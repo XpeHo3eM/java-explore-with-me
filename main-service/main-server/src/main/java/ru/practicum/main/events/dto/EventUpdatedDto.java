@@ -37,4 +37,7 @@ public class EventUpdatedDto {
 
     private Boolean requestModeration;
     private EventStateAction stateAction;
+
+    @Size(min = 10, max = 2000)
+    private String moderationComment;
 }

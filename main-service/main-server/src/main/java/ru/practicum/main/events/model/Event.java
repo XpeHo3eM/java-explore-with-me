@@ -64,6 +64,9 @@ public class Event {
     @Column(name = "confirmed_requests")
     private Integer confirmedRequests;
 
+    @Column(name = "moderation_comment")
+    private String moderationComment;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
