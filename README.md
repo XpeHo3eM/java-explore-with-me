@@ -99,7 +99,7 @@ Statistic, main и БД PostgreSQL запускаются в отдельном 
    - ***PATCH users/{userId}/events/{eventId}/requests*** - изменение статуса (подтверждение / отмена) заявок на участие в событии текущего пользователя.
 
 ### 2. **RequestPrivateController**:
-   - ***GET users/{userId}/requests - получение информации о заявках текущего пользователя на участие с чужих событиях.
+   - ***GET users/{userId}/requests*** - получение информации о заявках текущего пользователя на участие с чужих событиях.
    - ***POST users/{userId}/requests*** - добавление запроса от текущего пользователя на участие в событии.
    - ***PATCH users/{userId}/requests/{requestId}/cancel*** - отмена своего запроса на участие в событии.
 
